@@ -16,6 +16,7 @@ sp = spotipy_fork.Spotify(auth=token)
 
 
 curr = sp.current_playback()
+print(curr)
 progress = curr["progress_ms"]
 is_playing = curr["is_playing"]
 song_id = curr["item"]["id"]

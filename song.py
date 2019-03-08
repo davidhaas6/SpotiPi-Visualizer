@@ -28,6 +28,7 @@ class FeaturedSong:
         self.period = segment_period
         self.song_segments = [None] * round(duration_ms/self.period)
         self.segments = analysis['segments']
+        self.duration_ms = duration_ms
 
         self.features = features
         self.key = features['key']
@@ -64,6 +65,9 @@ class FeaturedSong:
                 seg_index+=1
 
     def get_segment(self, cur_time):
+        if cur_time >= self.duration_ms:
+            return False
+
         idx = int(floor(cur_time/self.period))
         return self.song_segments[idx]
 

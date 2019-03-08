@@ -1,6 +1,8 @@
 import spotipy_fork
 from spotipy_fork import util
 from song import FeaturedSong, Song
+from threading import Timer
+import time
 
 
 def _generate_token():
@@ -21,42 +23,34 @@ class SpotifyCoordinator:
 
     def fetch_song(self, do_analysis=True):
         self.play_info = self.spotify.current_playback()
-        song_id = self.play_info["item"]["id"]
-        name = self.play_info["item"]["name"]
-        duration = self.play_info["item"]["duration_ms"]
 
-        if do_analysis:
-            analysis = self.spotify.audio_analysis(song_id)
-            features = self.spotify.audio_features([song_id])
+        if self.play_info is not None and self.play_info["item"] is not None:
+            song_id = self.play_info["item"]["id"]
+            name = self.play_info["item"]["name"]
+            duration = self.play_info["item"]["duration_ms"]
 
-            self.featured_song(name, song_id, duration, analysis, features, self.analysis_period)
-            self.song = self.featured_song
-        else:
-            self.song = Song(name, song_id, duration)
+            if do_analysis:
+                analysis = self.spotify.audio_analysis(song_id)
+                features = self.spotify.audio_features([song_id])
+
+                self.featured_song(name, song_id, duration, analysis, features, self.analysis_period)
+                self.song = self.featured_song
+            else:
+                self.song = Song(name, song_id, duration)
 
 
     def is_playing(self):
+        if self.play_info is None:
+            return False
+
         return self.play_info['is_playing']
 
     def begin(self):
 
+        self.fetch_song()
 
-
-
-
-curr = sp.current_playback()
-is_playing = curr["is_playing"]
-if is_playing:
-    progress = curr["progress_ms"]
-    song_id = curr["item"]["id"]
-    name = curr["item"]["name"]
-    duration = curr["item"]["duration_ms"]
-    print(progress, is_playing, song_id, name, duration)
-
-    fs = FeaturedSong(duration, analysis)
-
-    analysis = sp.audio_analysis(song_id)
-    spotify_segments = analysis["segments"]
-
-
-
+        if self.is_playing():
+            start_time = time.time()
+            progress = self.play_info["progress_ms"]
+            duration = self.song.duration_ms
+            cs = self.featured_song.get_segment()
