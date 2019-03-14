@@ -1,0 +1,1 @@
+A spotify-enabled LED strip music visualizer designed to run on a Raspberry Pi Zero W.
