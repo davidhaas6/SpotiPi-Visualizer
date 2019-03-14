@@ -23,6 +23,7 @@ class SongFeature:
 
 
 class FeaturedSong:
+    # Breaks up song into X ms brackets where each bracket has a SongFeature element describing that time period
     def __init__(self, name, song_id, duration_ms, features, analysis, segment_period=10):
         #Idea: Cache sound features locally?
         self.period = segment_period
@@ -55,6 +56,7 @@ class FeaturedSong:
 
             # If they intersect
             if bracket_start <= seg_end and seg_start <= bracket_end:
+                #TODO: Add support for multiple songs within a single bracket
                 sf = SongFeature(cur_seg['timbre'], cur_seg['pitches'], cur_seg['loudness_max'],
                                 duration_ms=self.period)
                 self.song_segments[i] = sf
