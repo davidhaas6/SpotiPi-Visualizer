@@ -13,8 +13,10 @@ def _generate_token():
     return util.prompt_for_user_token(username=username, client_id=c_id, client_secret=secret, scope=scope,
                                       redirect_uri='http://example.com/callback/')
 
+
 class SpotifyCoordinator:
     THREAD_NAME = 'watchdog'
+
     def __init__(self, analysis_freq=100):
         self.spotify = spotipy_fork.Spotify(auth=_generate_token())
         self.play_info = None
@@ -22,7 +24,8 @@ class SpotifyCoordinator:
         self.featured_song = None
         self.analysis_period = (1/analysis_freq) * 1000
 
-        self.watchdog = threading.Thread(name=SpotifyCoordinator.THREAD_NAME, target=self._watchdog_worker)
+        self.watchdog = threading.Thread(
+            name=SpotifyCoordinator.THREAD_NAME, target=self._watchdog_worker)
 
     def fetch_song(self, do_analysis=True):
         self.song = None
@@ -37,7 +40,8 @@ class SpotifyCoordinator:
                 analysis = self.spotify.audio_analysis(song_id)
                 features = self.spotify.audio_features([song_id])
 
-                self.featured_song = FeaturedSong(name, song_id, duration, analysis, features, self.analysis_period)
+                self.featured_song = FeaturedSong(
+                    name, song_id, duration, analysis, features, self.analysis_period)
                 self.song = self.featured_song
             else:
                 self.song = Song(name, song_id, duration)
@@ -73,7 +77,10 @@ class SpotifyCoordinator:
             start_time = time.time()
             progress = self.play_info["progress_ms"]
             duration = self.song.duration_ms
-            cs = self.featured_song.get_segment()
+
+            while progress < duration:
+                seg = self.featured_song.get_segment(progress)
+                
 
 
 # class SpotifyWatchdog(threading.Thread):
