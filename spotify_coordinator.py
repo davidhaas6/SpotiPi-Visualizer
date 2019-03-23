@@ -2,8 +2,9 @@ import spotipy_fork
 from spotipy_fork import util
 from song import FeaturedSong, Song
 from led import LightShow
-import threading
+from multiprocessing import Process
 import time
+from pprint import pprint
 
 
 def _generate_token():
@@ -16,7 +17,6 @@ def _generate_token():
 
 
 class SpotifyCoordinator:
-    THREAD_NAME = 'watchdog'
 
     def __init__(self, led_strip, analysis_freq=100):
         self.light_show = LightShow(led_strip)
@@ -26,9 +26,7 @@ class SpotifyCoordinator:
         self.song = None
         self.featured_song = None
 
-
-        self.watchdog = threading.Thread(
-            name=SpotifyCoordinator.THREAD_NAME, target=self._watchdog_worker)
+        self.coordinator = Process(target=self._watchdog_worker)  # ,args=(self,)
 
     def fetch_song(self, do_analysis=True):
         self.song = None
@@ -41,10 +39,12 @@ class SpotifyCoordinator:
 
             if do_analysis:
                 analysis = self.spotify.audio_analysis(song_id)
-                features = self.spotify.audio_features([song_id])
+                features = self.spotify.audio_features([song_id])[0]
+
+                pprint(features)
 
                 self.featured_song = FeaturedSong(
-                    name, song_id, duration, analysis, features, self.analysis_period)
+                    name, song_id, duration, features, analysis, self.analysis_period)
                 self.song = self.featured_song
             else:
                 self.song = Song(name, song_id, duration)
@@ -61,9 +61,9 @@ class SpotifyCoordinator:
         return self.play_info['is_playing']
 
     def begin(self):
-        if not self.watchdog.is_alive():
+        if not self.coordinator.is_alive():
             try:
-                self.watchdog.start()
+                self.coordinator.start()
                 return True
             except Exception as e:
                 print(e)
@@ -87,31 +87,11 @@ class SpotifyCoordinator:
             duration = self.song.duration_ms
 
             while progress < duration:
-                seg = self.featured_song.get_segment(progress)
-                
+                self.light_show.play_segment(progress)
 
+                progress += (time.time() - start_time) * 1000
+                start_time = time.time()
 
-# class SpotifyWatchdog(threading.Thread):
-#     # https://www.tutorialspoint.com/python3/python_multithreading.htm
-#     # https://docs.python.org/3/library/threading.html
-#     def __init__(self, thread_id, name, coordinator):
-#         threading.Thread.__init__(self)
-#
-#         self.thread_id = thread_id
-#         self.name = name
-#         self.master = coordinator
-#
-#     def run(self):
-#         print("Starting spotify watchdog", self.name)
-#         pass
-#
-#     def watch(self):
-#         while not self.master.is_playing():
-#             self.master.fetch_song()
-#             time.sleep(0.1)
-#
-#         if self.master.is_playing():
-#             start_time = time.time()
-#             progress = self.master.play_info["progress_ms"]
-#             duration = self.master.song.duration_ms
-#             cs = self.master.featured_song.get_segment()
+if __name__ == '__main__':
+    sc = SpotifyCoordinator(None)
+    sc.begin()
