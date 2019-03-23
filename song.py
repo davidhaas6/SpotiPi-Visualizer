@@ -15,11 +15,10 @@ class Song:
         pitch_class = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B']
         modalities = ['Major', 'Minor']
 
-        name_time = self.name + " - " + str(self.duration_ms/1000) + "s - "
+        name_time = self.name + " - " + str(round(self.duration_ms/1000,1)) + "s - "
         pitch_mode = "Key: " + pitch_class[self.key] + ' - Modality: ' + modalities[self.mode]
 
         return name_time + pitch_mode
-
 
 
 class SongFeature:
@@ -66,7 +65,7 @@ class FeaturedSong(Song):
 
             # If they intersect
             if bracket_start <= seg_end and seg_start <= bracket_end:
-                #TODO: Add support for multiple songs within a single bracket
+                #TODO: Add support for multiple features within a single bracket
                 sf = SongFeature(cur_seg['timbre'], cur_seg['pitches'], cur_seg['loudness_max'],
                                 duration_ms=self.period)
                 self.song_segments[i] = sf
@@ -83,3 +82,8 @@ class FeaturedSong(Song):
         idx = int(floor(cur_time/self.period))
         return self.song_segments[idx]
 
+    def __getitem__(self, index):
+        return self.song_segments[index]
+
+    def __len__(self):
+        return len(self.song_segments)
