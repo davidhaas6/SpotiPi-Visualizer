@@ -14,8 +14,12 @@ num_pixels = 220
 # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
 ORDER = neopixel.GRB
 
+start = time.time()
 pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.2, auto_write=False,
                            pixel_order=ORDER)
+end = time.time()
+
+print("Init time: ", (start-end))
 
 
 def wheel(pos):
