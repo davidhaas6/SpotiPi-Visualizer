@@ -11,6 +11,16 @@ class Song:
         self.key = key
         self.mode = mode
 
+    def __str__(self):
+        pitch_class = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B']
+        modalities = ['Major', 'Minor']
+
+        name_time = self.name + " - " + str(self.duration_ms/1000) + "s - "
+        pitch_mode = "Key: " + pitch_class[self.key] + ' - Modality: ' + modalities[self.mode]
+
+        return name_time + pitch_mode
+
+
 
 class SongFeature:
     def __init__(self, timbre, pitches, max_loudness, duration_ms):
@@ -22,7 +32,7 @@ class SongFeature:
         self.primary_timbre = timbre.index(max(timbre))
 
 
-class FeaturedSong:
+class FeaturedSong(Song):
     # Breaks up song into X ms brackets where each bracket has a SongFeature element describing that time period
     def __init__(self, name, song_id, duration_ms, features, analysis, segment_period=10):
         #Idea: Cache sound features locally?
@@ -40,7 +50,7 @@ class FeaturedSong:
         self._build_feature_array()
         print("elapsed time: ", round((time.time() - start)* 1000,1), "ms")
 
-        self.__init__(name, song_id, duration_ms, self.key, self.mode)
+        super().__init__(name, song_id, duration_ms, self.key, self.mode)
 
     def _build_feature_array(self):
         seg_index = 0
