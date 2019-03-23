@@ -1,6 +1,7 @@
 import spotipy_fork
 from spotipy_fork import util
 from song import FeaturedSong, Song
+from led import LightShow
 import threading
 import time
 
@@ -17,12 +18,14 @@ def _generate_token():
 class SpotifyCoordinator:
     THREAD_NAME = 'watchdog'
 
-    def __init__(self, analysis_freq=100):
+    def __init__(self, led_strip, analysis_freq=100):
+        self.light_show = LightShow(led_strip)
         self.spotify = spotipy_fork.Spotify(auth=_generate_token())
+        self.analysis_period = (1/analysis_freq) * 1000
         self.play_info = None
         self.song = None
         self.featured_song = None
-        self.analysis_period = (1/analysis_freq) * 1000
+
 
         self.watchdog = threading.Thread(
             name=SpotifyCoordinator.THREAD_NAME, target=self._watchdog_worker)
@@ -69,12 +72,17 @@ class SpotifyCoordinator:
 
 
     def _watchdog_worker(self):
+        #TODO: Switch to multiprocessing
+        start_time = -1
         while True:
             while not self.is_playing():
-                self.fetch_song()
                 time.sleep(0.1)
+                start_time = time.time()
+                self.fetch_song()
 
-            start_time = time.time()
+
+            self.light_show.build_show(self.featured_song)
+
             progress = self.play_info["progress_ms"]
             duration = self.song.duration_ms
 
