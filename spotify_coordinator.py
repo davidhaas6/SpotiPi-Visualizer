@@ -1,7 +1,7 @@
 import spotipy_fork
 from spotipy_fork import util
 from song import FeaturedSong, Song
-from led import LightShow
+from led import LEDCoordinator
 from multiprocessing import Process
 import time
 from pprint import pprint
@@ -17,16 +17,23 @@ def _generate_token():
 
 
 class SpotifyCoordinator:
+    #TODO: Thread external processes such as building the show and fetching songs
 
-    def __init__(self, led_strip, analysis_freq=100):
-        self.light_show = LightShow(led_strip)
+    def __init__(self, led_strip, analysis_freq=100, update_freq=None):
+        self.led_coord = LEDCoordinator(led_strip)
         self.spotify = spotipy_fork.Spotify(auth=_generate_token())
         self.analysis_period = (1/analysis_freq) * 1000
         self.play_info = None
         self.song = None
         self.featured_song = None
 
-        self.coordinator = Process(target=self._watchdog_worker)  # ,args=(self,)
+        if update_freq is None:
+            # Update the LEDS at twice the frequency of the segments to be safe
+            self.update_period = (1/(analysis_freq*2)) * 1000
+        else:
+            self.update_period = (1/update_freq) * 1000
+
+        self.coordinator = Process(target=self._coordinator_worker)  # ,args=(self,)
 
     def fetch_song(self, do_analysis=True):
         self.song = None
@@ -40,8 +47,6 @@ class SpotifyCoordinator:
             if do_analysis:
                 analysis = self.spotify.audio_analysis(song_id)
                 features = self.spotify.audio_features([song_id])[0]
-
-                pprint(features)
 
                 self.featured_song = FeaturedSong(
                     name, song_id, duration, features, analysis, self.analysis_period)
@@ -71,8 +76,7 @@ class SpotifyCoordinator:
         return False
 
 
-    def _watchdog_worker(self):
-        #TODO: Switch to multiprocessing
+    def _coordinator_worker(self):
         start_time = -1
         while True:
             while not self.is_playing():
@@ -81,16 +85,22 @@ class SpotifyCoordinator:
                 self.fetch_song()
 
 
-            self.light_show.build_show(self.featured_song)
+            self.led_coord.build_show(self.featured_song)
 
             progress = self.play_info["progress_ms"]
             duration = self.song.duration_ms
 
+            last_seg_t = time.time()
+            self.led_coord.play_segment(progress)
             while progress < duration:
-                self.light_show.play_segment(progress)
+
+                if start_time > (last_seg_t + self.update_period / 1000):
+                    last_seg_t = time.time()
+                    self.led_coord.play_segment(progress)
 
                 progress += (time.time() - start_time) * 1000
                 start_time = time.time()
+
 
 if __name__ == '__main__':
     sc = SpotifyCoordinator(None)
