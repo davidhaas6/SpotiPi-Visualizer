@@ -108,7 +108,10 @@ class LightShow:
 
     def _hsv_to_rgb(self, h,s,v):
         r,g,b = colorsys.hsv_to_rgb(h/360,s/255,v/255)
-        return int(r*255), int(g*255), int(b*255)
+        r = int(r * 255)
+        g = int(g * 255)
+        b =int(b * 255)
+        return min(r,255), min(g,255), min (b,255)
 
     def __getitem__(self, time):
         if time >= self.featured_song.duration_ms:
