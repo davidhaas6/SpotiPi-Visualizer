@@ -74,7 +74,8 @@ class LightShow:
         sat = self._timbre_to_saturation(feature.timbre)
         val = self._volume_to_value(feature.volume)
 
-        sat = val = 128
+        val = 128
+        sat = 255
 
         rgb = self._hsv_to_rgb(hue,sat,val)
         leds = [rgb] * self.num_leds
