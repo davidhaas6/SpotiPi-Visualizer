@@ -30,6 +30,7 @@ class LEDCoordinator:
         self.set_leds(self.show[time])
 
     def set_leds(self, arr):
+        print(arr[0:10])
         for i in range(0, self.leds.n):
             self.leds[i] = arr[i]
         self.leds.show()
