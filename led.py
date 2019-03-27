@@ -27,7 +27,7 @@ class LEDCoordinator:
 
 
     def play_segment(self, time):
-        print(time)
+        #print(time)
         self.set_leds(self.show[time])
 
     def set_leds(self, arr):
@@ -108,7 +108,7 @@ class LightShow:
 
     def _timbre_to_saturation(self, timbre):
         # uses flatness and brightness components
-        sat = 128 + timbre[1] - timbre[2]
+        sat = 128
         return min(sat, 255)
 
     def _hsv_to_rgb(self, h,s,v):
