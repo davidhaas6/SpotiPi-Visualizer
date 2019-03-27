@@ -109,6 +109,7 @@ class SpotifyCoordinator:
                 start_time = time.time()
 
             time.sleep(1)
+            self.fetch_song()
 
 
 if __name__ == '__main__':
