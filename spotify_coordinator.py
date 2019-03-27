@@ -5,6 +5,7 @@ from led import LEDCoordinator
 from multiprocessing import Process
 import time
 from pprint import pprint
+import numpy as np
 
 
 def _generate_token():
@@ -51,6 +52,10 @@ class SpotifyCoordinator:
                 self.featured_song = FeaturedSong(
                     name, song_id, duration, features, analysis, self.analysis_period)
                 self.song = self.featured_song
+
+                vols = self.featured_song.volume_arr
+                print(np.std(vols), np.median(vols), np.mean(vols), np.max(vols))
+                print(self.featured_song.loudness)
             else:
                 self.song = Song(name, song_id, duration)
                 self.featured_song = None

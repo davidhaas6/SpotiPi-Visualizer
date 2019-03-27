@@ -1,5 +1,6 @@
 import time
 from math import floor
+import numpy as np
 
 # https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/
 
@@ -44,10 +45,14 @@ class FeaturedSong(Song):
         self.key = features['key']
         self.mode = features['mode']
         self.tempo = features['tempo']
+        self.loudness = features['loudness']
+        self.danceability = features['danceability']
 
-        start = time.time()
+        self.volume_arr = np.zeros(len(self.song_segments))
         self._build_feature_array()
-        print("elapsed time: ", round((time.time() - start)* 1000,1), "ms")
+
+        self.volume_std = np.std(self.volume_arr)
+        self.volume_med = np.median(self.volume_arr)
 
         super().__init__(name, song_id, duration_ms, self.key, self.mode)
 
@@ -69,6 +74,7 @@ class FeaturedSong(Song):
                 sf = SongFeature(cur_seg['timbre'], cur_seg['pitches'], cur_seg['loudness_max'],
                                 duration_ms=self.period)
                 self.song_segments[i] = sf
+                self.volume_arr[i] = sf.volume
                 i+=1
             else:
                 # Check the next segment
@@ -82,8 +88,17 @@ class FeaturedSong(Song):
         idx = int(floor(cur_time/self.period))
         return self.song_segments[idx]
 
+    def time_to_index(self, cur_time):
+        if cur_time >= self.duration_ms:
+            return -1
+
+        return int(floor(cur_time/self.period))
+
     def __getitem__(self, index):
         return self.song_segments[index]
 
     def __len__(self):
         return len(self.song_segments)
+
+    def __iter__(self):
+        return iter(self.song_segments)
