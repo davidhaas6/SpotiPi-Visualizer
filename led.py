@@ -23,7 +23,7 @@ class LEDCoordinator:
         self.show = LightShow(featured_song, self.leds.n)
         print("Built!")
         print("Showlen:", len(self.show.show), "song len:", len(featured_song))
-        print(self.show.show[0:2][0])
+        print(self.show.show[0][0])
 
 
     def play_segment(self, time):

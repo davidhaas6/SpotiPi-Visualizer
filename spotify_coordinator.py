@@ -108,6 +108,8 @@ class SpotifyCoordinator:
                 progress += (time.time() - start_time) * 1000
                 start_time = time.time()
 
+            time.sleep(1)
+
 
 if __name__ == '__main__':
     sc = SpotifyCoordinator(None)
