@@ -38,6 +38,7 @@ class SpotifyCoordinator:
 
     def fetch_song(self, do_analysis=True):
         self.song = None
+        print("Fetching song...")
         self.play_info = self.spotify.current_playback()
 
         if self.play_info is not None and self.play_info["item"] is not None:
@@ -49,6 +50,7 @@ class SpotifyCoordinator:
                 analysis = self.spotify.audio_analysis(song_id)
                 features = self.spotify.audio_features([song_id])[0]
 
+                print("Building featured song...")
                 self.featured_song = FeaturedSong(
                     name, song_id, duration, features, analysis, self.analysis_period)
                 self.song = self.featured_song
