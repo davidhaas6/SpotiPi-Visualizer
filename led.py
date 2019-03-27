@@ -33,7 +33,12 @@ class LEDCoordinator:
     def set_leds(self, arr):
 
         for i in range(0, self.leds.n):
-            self.leds[i] = arr[i]
+            try:
+                self.leds[i] = arr[i]
+            except Exception as e:
+                print(arr[i])
+                print(e)
+
         self.leds.show()
 
 
