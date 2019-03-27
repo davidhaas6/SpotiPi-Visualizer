@@ -23,6 +23,7 @@ class LEDCoordinator:
         self.show = LightShow(featured_song, self.leds.n)
         print("Built!")
         print("Showlen:", len(self.show.show), "song len:", len(featured_song))
+        print(self.show.show[0:2])
 
 
     def play_segment(self, time):
@@ -30,7 +31,7 @@ class LEDCoordinator:
         self.set_leds(self.show[time])
 
     def set_leds(self, arr):
-        print(arr[0:10])
+
         for i in range(0, self.leds.n):
             self.leds[i] = arr[i]
         self.leds.show()
@@ -107,7 +108,7 @@ class LightShow:
 
     def _hsv_to_rgb(self, h,s,v):
         r,g,b = colorsys.hsv_to_rgb(h/360,s/255,v/255)
-        return r*255, g*255, b*255
+        return int(r*255), int(g*255), int(b*255)
 
     def __getitem__(self, time):
         if time >= self.featured_song.duration_ms:
