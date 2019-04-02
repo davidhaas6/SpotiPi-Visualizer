@@ -62,11 +62,11 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         frq = 100
     else:
-        frq = int(sys.argv[1])
+        frq = math.exp(int(sys.argv[1]))
 
-
+    print(frq)
     while True:
-        rainbow_cycle(math.exp(frq))  # rainbow cycle with 1ms delay per step
+        rainbow_cycle(frq)  # rainbow cycle with 1ms delay per step
 
         # Comment this line out if you have RGBW/GRBW NeoPixels
         # pixels.fill((255, 0, 0))
