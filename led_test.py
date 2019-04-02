@@ -50,7 +50,8 @@ def rainbow_cycle(freq):
         for i in range(num_pixels):
             pixel_index = (i * 256 // num_pixels) + j
             pixels[i] = wheel(pixel_index & 255)
-        pixels.show()
+        if j % 16 == 0:
+            pixels.show()
         time.sleep(1 / freq)
 
 if __name__ == '__main__':
@@ -64,7 +65,7 @@ if __name__ == '__main__':
     else:
         frq = math.exp(int(sys.argv[1]))
 
-    print(frq)
+    print(int(frq))
     while True:
         rainbow_cycle(frq)  # rainbow cycle with 1ms delay per step
 
