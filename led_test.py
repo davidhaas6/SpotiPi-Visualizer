@@ -55,17 +55,18 @@ def rainbow_cycle(freq):
 
 if __name__ == '__main__':
     import sys
+    import math
 
     print(sys.argv)
 
     if len(sys.argv) == 1:
-        frq = 1000
+        frq = 100
     else:
         frq = int(sys.argv[1])
 
 
     while True:
-        rainbow_cycle(frq)  # rainbow cycle with 1ms delay per step
+        rainbow_cycle(math.exp(frq))  # rainbow cycle with 1ms delay per step
 
         # Comment this line out if you have RGBW/GRBW NeoPixels
         # pixels.fill((255, 0, 0))
