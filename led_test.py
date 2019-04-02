@@ -44,35 +44,44 @@ def wheel(pos):
     return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
 
 
-def rainbow_cycle(wait):
+#waits wait ms
+def rainbow_cycle(freq):
     for j in range(255):
         for i in range(num_pixels):
             pixel_index = (i * 256 // num_pixels) + j
             pixels[i] = wheel(pixel_index & 255)
         pixels.show()
-        time.sleep(wait)
+        time.sleep(1 / freq)
 
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) < 2:
+        frq = 1000
+    else:
+        frq = sys.argv[0]
 
-while True:
-    # Comment this line out if you have RGBW/GRBW NeoPixels
-    # pixels.fill((255, 0, 0))
-    # # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # # pixels.fill((255, 0, 0, 0))
-    # pixels.show()
-    # time.sleep(1)
-    #
-    # # Comment this line out if you have RGBW/GRBW NeoPixels
-    # pixels.fill((0, 255, 0))
-    # # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # # pixels.fill((0, 255, 0, 0))
-    # pixels.show()
-    # time.sleep(1)
-    #
-    # # Comment this line out if you have RGBW/GRBW NeoPixels
-    # pixels.fill((0, 0, 255))
-    # # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # # pixels.fill((0, 0, 255, 0))
-    # pixels.show()
-    # time.sleep(1)
+    print (sys.argv)
+    while True:
+        rainbow_cycle(frq)  # rainbow cycle with 1ms delay per step
 
-    rainbow_cycle(0.001)  # rainbow cycle with 1ms delay per step
+        # Comment this line out if you have RGBW/GRBW NeoPixels
+        # pixels.fill((255, 0, 0))
+        # # Uncomment this line if you have RGBW/GRBW NeoPixels
+        # # pixels.fill((255, 0, 0, 0))
+        # pixels.show()
+        # time.sleep(1)
+        #
+        # # Comment this line out if you have RGBW/GRBW NeoPixels
+        # pixels.fill((0, 255, 0))
+        # # Uncomment this line if you have RGBW/GRBW NeoPixels
+        # # pixels.fill((0, 255, 0, 0))
+        # pixels.show()
+        # time.sleep(1)
+        #
+        # # Comment this line out if you have RGBW/GRBW NeoPixels
+        # pixels.fill((0, 0, 255))
+        # # Uncomment this line if you have RGBW/GRBW NeoPixels
+        # # pixels.fill((0, 0, 255, 0))
+        # pixels.show()
+        # time.sleep(1)
+
