@@ -58,10 +58,10 @@ if __name__ == '__main__':
 
     print(sys.argv)
 
-    if len(sys.argv) < 1:
+    if len(sys.argv) == 1:
         frq = 1000
     else:
-        frq = int(sys.argv[0])
+        frq = int(sys.argv[1])
 
 
     while True:
